@@ -1,0 +1,126 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}ReliefNet AI{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <a class="brand" href="{{ url_for('dashboard') }}">
+            <span class="brand-mark">R</span>
+            <span>
+                ReliefNet<span class="brand-ai">AI</span>
+                <small>RESPONSE NETWORK</small>
+            </span>
+        </a>
+
+        <div class="nav-label">WORKSPACE</div>
+
+        <a class="nav-link" href="{{ url_for('dashboard') }}">
+            ▦ <span>Dashboard</span>
+        </a>
+
+        <a class="nav-link" href="{{ url_for('command_centre') }}">
+            ◈ <span>AI Command Centre</span>
+        </a>
+
+        <a class="nav-link" href="{{ url_for('new_request') }}">
+            ＋ <span>New relief request</span>
+        </a>
+
+        <a class="nav-link" href="{{ url_for('volunteers') }}">
+            ♙ <span>Volunteer Network</span>
+        </a>
+
+        <a class="nav-link" href="{{ url_for('resources') }}">
+            📦 <span>Resource Management</span>
+        </a>
+
+        <div class="sidebar-bottom">
+
+            <div class="status-dot"></div>
+
+            <div>
+                <b>Demo environment</b>
+                <small>Simulated data only</small>
+            </div>
+
+        </div>
+
+        {% if session.get('admin_logged_in') %}
+        <div class="admin-profile">
+            <div class="avatar">MA</div>
+
+            <div class="admin-details">
+                <b>Malik Fazeel Ahmad</b>
+                <small>Portal Administrator</small>
+            </div>
+
+            <a class="logout-link" href="{{ url_for('logout') }}" title="Logout">
+                ↗
+            </a>
+        </div>
+        {% endif %}
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+                <span class="eyebrow">HUMANITARIAN RESPONSE PLATFORM</span>
+                <h1>{% block page_title %}Command center{% endblock %}</h1>
+            </div>
+
+            <div class="top-right">
+
+                <span class="live-pill">
+                    <i></i> SYSTEM ONLINE
+                </span>
+
+                <span class="avatar">RN</span>
+
+            </div>
+
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+        <footer>
+            RELIEFNET AI
+            <span>•</span>
+            HACKATHON DEMONSTRATION
+            <span>•</span>
+            NOT FOR REAL EMERGENCY DISPATCH
+        </footer>
+
+    </main>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

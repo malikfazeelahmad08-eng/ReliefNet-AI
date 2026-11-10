@@ -1,0 +1,726 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard · ReliefNet AI{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+.dashboard-page { color: #e8eef7; }
+.dashboard-page .welcome-row {
+    display:flex; justify-content:space-between; align-items:center;
+    gap:18px; margin-bottom:24px; flex-wrap:wrap;
+}
+.dashboard-page h2 { font-size:27px; margin:0 0 7px; }
+.dashboard-page h3 { margin:0; font-size:17px; }
+.dashboard-page p { color:#91a3b9; margin:5px 0 0; font-size:13px; }
+.dashboard-page .primary-btn {
+    display:inline-block; background:#14b8a6; color:#062c30;
+    padding:12px 18px; border-radius:9px; text-decoration:none;
+    font-weight:800; font-size:13px;
+}
+.dashboard-page .demo-banner {
+    background:#172d43; border:1px solid #29445e;
+    padding:14px 17px; border-radius:11px; margin-bottom:23px;
+    color:#b7c8d9; font-size:12px; line-height:1.6;
+}
+.dashboard-page .demo-banner span {
+    color:#fbbf24; font-weight:800; margin-right:10px;
+}
+.dashboard-page .stats-grid {
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:15px; margin-bottom:22px;
+}
+.dashboard-page .stat-card,
+.dashboard-page .panel {
+    background:#14263a; border:1px solid #253d54;
+    border-radius:14px; padding:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
+.dashboard-page .stat-card { position:relative; overflow:hidden; }
+.dashboard-page .stat-top {
+    display:flex; justify-content:space-between;
+    color:#9eb0c4; font-size:12px;
+}
+.dashboard-page .stat-top b {
+    width:29px; height:29px; display:grid; place-items:center;
+    border-radius:8px; background:#20394e; color:#5eead4;
+}
+.dashboard-page .stat-card strong {
+    display:block; font-size:34px; margin:15px 0 5px;
+    color:#f8fafc;
+}
+.dashboard-page .stat-card small {
+    color:#8195aa; font-size:11px;
+}
+.dashboard-page .amber { color:#fbbf24!important; }
+.dashboard-page .red { color:#fb7185!important; }
+.dashboard-page .green { color:#4ade80!important; }
+.dashboard-page .content-grid {
+    display:grid; grid-template-columns:1.65fr 1fr;
+    gap:17px; margin-bottom:20px;
+}
+.dashboard-page .panel-heading {
+    display:flex; justify-content:space-between;
+    align-items:center; gap:12px; margin-bottom:18px;
+}
+.dashboard-page .tag {
+    color:#5eead4; background:#153d40;
+    padding:7px 10px; border-radius:7px;
+    font-size:10px; font-weight:800;
+}
+.dashboard-page #map {
+    width:100%; height:340px; border-radius:10px;
+    z-index:1; background:#20394e;
+}
+.dashboard-page .map-legend {
+    display:flex; flex-wrap:wrap; gap:18px;
+    color:#a9bacb; font-size:11px; margin-top:15px;
+}
+.dashboard-page .legend-dot {
+    display:inline-block; width:9px; height:9px;
+    border-radius:50%; margin-right:5px;
+}
+.dashboard-page .legend-dot.high { background:#fb7185; }
+.dashboard-page .legend-dot.medium { background:#fbbf24; }
+.dashboard-page .legend-dot.low { background:#4ade80; }
+.dashboard-page .priority-list > div {
+    display:flex; align-items:center; gap:11px;
+    padding:15px 0; border-bottom:1px solid #263c51;
+}
+.dashboard-page .priority-icon {
+    width:35px; height:35px; display:grid; place-items:center;
+    border-radius:9px; font-weight:900;
+}
+.dashboard-page .p-high { background:#482b39; color:#fb7185; }
+.dashboard-page .p-medium { background:#493d26; color:#fbbf24; }
+.dashboard-page .p-low { background:#1e403c; color:#4ade80; }
+.dashboard-page .priority-list b {
+    display:block; font-size:12px; color:#e6edf5;
+}
+.dashboard-page .priority-list small {
+    color:#8fa2b7; font-size:10px;
+}
+.dashboard-page .priority-list strong {
+    margin-left:auto; font-size:21px; color:white;
+}
+.dashboard-page .rules-note {
+    background:#1c3449; border-radius:9px;
+    padding:14px; margin-top:17px;
+}
+.dashboard-page .rules-note b { color:#5eead4; font-size:12px; }
+.dashboard-page .rules-note p { line-height:1.6; }
+.dashboard-page .text-link {
+    color:#5eead4; text-decoration:none; font-size:12px;
+    font-weight:700;
+}
+.dashboard-page .table-wrap { overflow-x:auto; }
+.dashboard-page table {
+    width:100%; border-collapse:collapse;
+    min-width:690px; font-size:12px;
+}
+.dashboard-page th {
+    color:#8fa2b7; text-align:left; padding:13px 10px;
+    font-size:10px; letter-spacing:.7px;
+    border-bottom:1px solid #30475c;
+}
+.dashboard-page td {
+    padding:15px 10px; border-bottom:1px solid #263c51;
+    color:#dce6f0;
+}
+.dashboard-page td small {
+    display:block; color:#8fa2b7; margin-top:5px;
+}
+.dashboard-page .priority-badge,
+.dashboard-page .status-badge {
+    display:inline-block; padding:6px 9px;
+    border-radius:6px; font-size:10px; font-weight:800;
+}
+.dashboard-page .priority-badge.high {
+    color:#fda4af; background:#482b39;
+}
+.dashboard-page .priority-badge.medium {
+    color:#fcd34d; background:#493d26;
+}
+.dashboard-page .priority-badge.low {
+    color:#86efac; background:#1e403c;
+}
+.dashboard-page .status-badge {
+    background:#20394e; color:#a9c4db;
+}
+.dashboard-page .inline-form {
+    display:flex; gap:5px; align-items:center;
+}
+.dashboard-page .inline-form select {
+    background:#1b3045; color:#e5edf5;
+    border:1px solid #40566d; padding:7px;
+    border-radius:6px; font-size:11px;
+}
+.dashboard-page .mini-btn {
+    background:#14b8a6; color:#062c30; border:0;
+    border-radius:6px; padding:8px 10px;
+    font-weight:800; cursor:pointer; font-size:10px;
+}
+.dashboard-page .empty-state {
+    text-align:center; padding:40px 15px;
+}
+.dashboard-page .empty-state div {
+    font-size:30px; color:#5eead4;
+}
+.dashboard-page .empty-state b { display:block; margin-top:10px; }
+.dashboard-page .empty-state .primary-btn { margin-top:18px; }
+
+.dashboard-page .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px;
+    margin-bottom: 20px;
+}
+
+.dashboard-page .analytics-grid .panel {
+    min-width: 0;
+}
+
+.dashboard-page .analytics-grid canvas {
+    max-width: 100%;
+}
+
+@media(max-width:900px) {
+    .dashboard-page .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:900px) {
+    .dashboard-page .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .dashboard-page .content-grid { grid-template-columns:1fr; }
+}
+@media(max-width:520px) {
+    .dashboard-page .stats-grid { grid-template-columns:1fr 1fr; gap:9px; }
+    .dashboard-page .stat-card { padding:13px; }
+    .dashboard-page .stat-card strong { font-size:27px; }
+    .dashboard-page #map { height:270px; }
+}
+
+/* SMART INSIGHTS PANEL */
+.dashboard-page .smart-insights {
+    margin-bottom: 20px;
+    padding: 22px;
+    border: 1px solid rgba(45, 212, 191, 0.2);
+    background: linear-gradient(135deg, #14263a, #102b35);
+}
+
+.dashboard-page .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.dashboard-page .insight-card {
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-page .insight-label {
+    display: block;
+    color: #9fb3c8;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.dashboard-page .insight-card h2 {
+    color: #5eead4;
+    font-size: 27px;
+    margin: 0 0 8px;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-page .insight-card p {
+    color: #a9bacb;
+    font-size: 12px;
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .dashboard-page .insights-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .dashboard-page .insights-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* RELIEFNET PROFESSIONAL DASHBOARD UPGRADE */
+
+.dashboard-page {
+    animation: dashboardEnter .45s ease-out;
+}
+
+@keyframes dashboardEnter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-page .welcome-row {
+    padding: 25px;
+    border: 1px solid #29445e;
+    border-radius: 17px;
+    background: linear-gradient(115deg, #10243a, #163b4a);
+    box-shadow: 0 12px 30px rgba(0,0,0,.12);
+}
+
+.dashboard-page .welcome-row h2 {
+    color: #f8fafc;
+    letter-spacing: -.7px;
+}
+
+.dashboard-page .welcome-row p {
+    color: #a9bdcf;
+}
+
+.dashboard-page .stat-card {
+    background: linear-gradient(145deg, #172d43, #102337);
+    transition: transform .25s ease, border-color .25s ease,
+                box-shadow .25s ease;
+}
+
+.dashboard-page .stat-card:hover {
+    transform: translateY(-5px);
+    border-color: #14b8a6;
+    box-shadow: 0 15px 30px rgba(0,0,0,.2);
+}
+
+.dashboard-page .stat-card strong {
+    letter-spacing: -1px;
+}
+
+.dashboard-page .panel {
+    transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.dashboard-page .panel:hover {
+    border-color: #376078;
+    box-shadow: 0 12px 30px rgba(0,0,0,.16);
+}
+
+.dashboard-page .panel-heading h3 {
+    color: #f1f5f9;
+    letter-spacing: -.3px;
+}
+
+.dashboard-page .smart-insights {
+    background: linear-gradient(130deg, #122b40, #103b3c);
+}
+
+.dashboard-page .insight-card {
+    transition: transform .2s ease, background .2s ease;
+}
+
+.dashboard-page .insight-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,.085);
+}
+
+.dashboard-page .primary-btn {
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.dashboard-page .primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(20,184,166,.25);
+}
+
+.dashboard-page table tbody tr {
+    transition: background .2s ease;
+}
+
+.dashboard-page table tbody tr:hover {
+    background: rgba(45,212,191,.055);
+}
+
+.dashboard-page .tag {
+    letter-spacing: .6px;
+    border: 1px solid rgba(94,234,212,.15);
+}
+
+@media(max-width:520px) {
+    .dashboard-page .welcome-row {
+        padding: 17px;
+    }
+}
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+<section class="welcome-row">
+    <div>
+        <h2>Response Overview</h2>
+        <p>Monitor community needs and coordinate relief activity.</p>
+    </div>
+    <a class="primary-btn" href="{{ url_for('new_request') }}">＋ Create Request</a>
+</section>
+
+<div class="demo-banner">
+    <span>● SIMULATION MODE</span>
+    All requests and map pins are fictional demo records.
+    Verify information before any real-world action.
+</div>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <div class="stat-top"><span>Total Requests</span><b>↗</b></div>
+        <strong>{{ total }}</strong>
+        <small>All submitted reports</small>
+    </article>
+    <article class="stat-card">
+        <div class="stat-top"><span>Awaiting Action</span><b class="amber">◷</b></div>
+        <strong>{{ pending }}</strong>
+        <small>Pending requests</small>
+    </article>
+    <article class="stat-card">
+        <div class="stat-top"><span>High Priority</span><b class="red">!</b></div>
+        <strong>{{ high }}</strong>
+        <small>Requires human review</small>
+    </article>
+    <article class="stat-card">
+        <div class="stat-top"><span>Resolved</span><b class="green">✓</b></div>
+        <strong>{{ resolved }}</strong>
+        <small>Marked completed</small>
+    </article>
+</section>
+
+<section class="analytics-grid">
+
+    <article class="panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Request Status Analytics</h3>
+                <p>Pending, assigned and resolved requests</p>
+            </div>
+            <span class="tag">LIVE DATA</span>
+        </div>
+        <div style="height:280px;">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Priority Distribution</h3>
+                <p>Requests by priority level</p>
+            </div>
+            <span class="tag">LIVE DATA</span>
+        </div>
+        <div style="height:280px;">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Relief Categories</h3>
+                <p>Community needs breakdown</p>
+            </div>
+            <span class="tag">LIVE DATA</span>
+        </div>
+        <div style="height:280px;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Volunteer Network</h3>
+                <p>Volunteer availability</p>
+            </div>
+            <span class="tag">LIVE DATA</span>
+        </div>
+        <div style="height:280px;">
+            <canvas id="volunteerChart"></canvas>
+        </div>
+    </article>
+
+</section>
+
+<section class="smart-insights panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Smart Insights</h3>
+            <p>Live intelligence from community relief data</p>
+        </div>
+        <span class="tag">AI INSIGHTS</span>
+    </div>
+
+    <div class="insights-grid">
+
+        <div class="insight-card">
+            <span class="insight-label">Most Requested Category</span>
+            <h2>{{ smart_insights.top_category }}</h2>
+            <p>Highest number of community requests</p>
+        </div>
+
+        <div class="insight-card">
+            <span class="insight-label">Pending Requests</span>
+            <h2>{{ smart_insights.pending }}</h2>
+            <p>Requests awaiting action</p>
+        </div>
+
+        <div class="insight-card">
+            <span class="insight-label">Resolution Rate</span>
+            <h2>{{ smart_insights.resolved_percentage }}%</h2>
+            <p>Requests marked as resolved</p>
+        </div>
+
+        <div class="insight-card">
+            <span class="insight-label">Available Volunteers</span>
+            <h2>{{ smart_insights.available_volunteers }}</h2>
+            <p>{{ smart_insights.assigned_volunteers }} currently assigned</p>
+        </div>
+
+    </div>
+</section>
+
+
+
+<section class="content-grid">
+
+    <article class="panel map-panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Relief Activity Map</h3>
+                <p>Reported locations with coordinates</p>
+            </div>
+            <span class="tag">PAKISTAN · DEMO</span>
+        </div>
+        <div id="map"></div>
+        <div class="map-legend">
+            <span><i class="legend-dot high"></i> High Priority</span>
+            <span><i class="legend-dot medium"></i> Medium</span>
+            <span><i class="legend-dot low"></i> Low</span>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Priority Snapshot</h3>
+                <p>Current request distribution</p>
+            </div>
+        </div>
+
+        <div class="priority-list">
+            <div>
+                <span class="priority-icon p-high">!</span>
+                <div><b>High Priority</b><small>Needs prompt human review</small></div>
+                <strong>{{ high }}</strong>
+            </div>
+            <div>
+                <span class="priority-icon p-medium">◷</span>
+                <div><b>Medium Priority</b><small>Essential needs / multiple people</small></div>
+                <strong>{{ items|selectattr('priority','equalto','Medium')|list|length }}</strong>
+            </div>
+            <div>
+                <span class="priority-icon p-low">•</span>
+                <div><b>Low Priority</b><small>Routine requests</small></div>
+                <strong>{{ items|selectattr('priority','equalto','Low')|list|length }}</strong>
+            </div>
+        </div>
+
+        <div class="rules-note">
+            <b>How prioritisation works</b>
+            <p>Transparent demo rules flag certain medical and rescue requests for human review. This is not a clinical or emergency triage tool.</p>
+        </div>
+    </article>
+
+</section>
+
+<section class="panel requests-panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Latest Relief Requests</h3>
+            <p>Review and update submitted needs</p>
+        </div>
+        <a class="text-link" href="{{ url_for('new_request') }}">＋ Add Request</a>
+    </div>
+
+    {% if items %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>REQUEST</th>
+                    <th>NEED</th>
+                    <th>LOCATION</th>
+                    <th>PRIORITY</th>
+                    <th>STATUS</th>
+                    <th>UPDATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <b>#{{ item.id }} · {{ item.name }}</b>
+                        <small>{{ item.people }} people · {{ item.created_at.strftime('%d %b, %H:%M') }}</small>
+                    </td>
+                    <td>{{ item.need }}</td>
+                    <td>{{ item.location }}</td>
+                    <td>
+                        <span class="priority-badge {{ item.priority|lower }}">{{ item.priority }}</span>
+                    </td>
+                    <td><span class="status-badge">{{ item.status }}</span></td>
+                    <td>
+                        <form class="inline-form" method="post"
+                              action="{{ url_for('update_status', request_id=item.id) }}">
+                            <select name="status">
+                                <option value="Pending" {% if item.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Assigned" {% if item.status == 'Assigned' %}selected{% endif %}>Assigned</option>
+                                <option value="Resolved" {% if item.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                            </select>
+                            <button class="mini-btn" type="submit">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div>＋</div>
+        <b>No Requests Yet</b>
+        <p>Create a sample request to populate the dashboard.</p>
+        <a class="primary-btn" href="{{ url_for('new_request') }}">Create First Request</a>
+    </div>
+    {% endif %}
+</section>
+
+</div>
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script type="application/json" id="relief-items-data">
+{{ map_items|tojson }}
+</script>
+
+<script type="application/json" id="analytics-data">
+{{ {
+    "status": status_counts,
+    "priority": priority_counts,
+    "category": category_counts,
+    "volunteers": volunteer_counts
+}|tojson }}
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+window.reliefItems = JSON.parse(
+    document.getElementById("relief-items-data").textContent
+);
+
+const analytics = JSON.parse(
+    document.getElementById("analytics-data").textContent
+);
+
+Chart.defaults.color = "#a9bacb";
+Chart.defaults.font.family = "Arial";
+
+function createChart(id, type, labels, values, colors) {
+    const canvas = document.getElementById(id);
+
+    if (!canvas) return;
+
+    new Chart(canvas, {
+        type: type,
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderColor: "#14263a",
+                borderWidth: 3,
+                borderRadius: type === "bar" ? 7 : 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        padding: 18,
+                        usePointStyle: true
+                    }
+                }
+            },
+            scales: type === "bar" ? {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 },
+                    grid: { color: "#294056" }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            } : {}
+        }
+    });
+}
+
+createChart(
+    "statusChart",
+    "doughnut",
+    Object.keys(analytics.status),
+    Object.values(analytics.status),
+    ["#fbbf24", "#38bdf8", "#4ade80"]
+);
+
+createChart(
+    "priorityChart",
+    "doughnut",
+    Object.keys(analytics.priority),
+    Object.values(analytics.priority),
+    ["#fb7185", "#fbbf24", "#4ade80"]
+);
+
+createChart(
+    "categoryChart",
+    "bar",
+    Object.keys(analytics.category),
+    Object.values(analytics.category),
+    "#2dd4bf"
+);
+
+createChart(
+    "volunteerChart",
+    "doughnut",
+    Object.keys(analytics.volunteers),
+    Object.values(analytics.volunteers),
+    ["#4ade80", "#38bdf8"]
+);
+</script>
+
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+
+{% endblock %}
+

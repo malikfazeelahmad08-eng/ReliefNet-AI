@@ -1,0 +1,385 @@
+
+{% extends "base.html" %}
+
+{% block title %}New Request · ReliefNet AI{% endblock %}
+{% block page_title %}Submit a relief request{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+    
+/* RELIEFNET — NEW REQUEST PROFESSIONAL DESIGN */
+
+#requestMap {
+    height: 380px;
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 15px;
+    border: 1px solid #dce6ed;
+    box-shadow: 0 7px 20px rgba(15,35,55,.08);
+    z-index: 1;
+}
+
+.map-instructions {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.welcome-row {
+    background: linear-gradient(115deg, #10243a, #087e83);
+    border: 1px solid #29485f;
+    border-radius: 17px;
+    padding: 26px;
+    box-shadow: 0 10px 28px rgba(15,35,55,.10);
+    animation: requestEnter .4s ease-out;
+}
+
+.welcome-row h2 {
+    color: white;
+    font-size: 25px;
+    letter-spacing: -.5px;
+}
+
+.welcome-row p {
+    color: #d5e9ee;
+}
+
+.demo-banner {
+    border-left: 4px solid #d69b28;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(15,35,55,.04);
+}
+
+.request-form {
+    border-radius: 17px;
+    border: 1px solid #e1e9f0;
+    box-shadow: 0 9px 28px rgba(15,35,55,.05);
+    overflow: hidden;
+}
+
+.form-section {
+    padding: 24px;
+    border-bottom: 1px solid #e9eef3;
+}
+
+.form-section h3 {
+    color: #173b50;
+    font-size: 18px;
+    letter-spacing: -.3px;
+}
+
+.form-section > p {
+    color: #718096;
+    font-size: 13px;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+    border: 1px solid #d6e0e8;
+    border-radius: 9px;
+    background: #fbfdff;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus {
+    outline: none;
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+}
+
+.form-actions {
+    padding: 20px 24px;
+    background: #f8fafc;
+}
+
+.primary-btn {
+    background: linear-gradient(110deg, #2563eb, #0d9488);
+    border-radius: 9px;
+    box-shadow: 0 5px 15px rgba(13,148,136,.17);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(13,148,136,.25);
+}
+
+@keyframes requestEnter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:650px) {
+    #requestMap {
+        height: 300px;
+    }
+
+    .form-section {
+        padding: 17px;
+    }
+
+    .welcome-row {
+        padding: 19px;
+    }
+
+    .form-actions {
+        padding: 17px;
+        flex-wrap: wrap;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="welcome-row">
+    <div>
+        <h2>Community assistance report</h2>
+        <p>Enter a reported need. Priority is suggested using transparent demo rules.</p>
+    </div>
+    <a class="secondary-btn" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+</section>
+
+<div class="demo-banner">
+    <span>DEMO ONLY</span>
+    Do not enter real personal, medical or sensitive information.
+    This prototype is not monitored by emergency services.
+</div>
+
+<form class="panel request-form" method="post">
+
+    <div class="form-section">
+        <h3>Contact & location</h3>
+        <p>Use fictional details for the hackathon demonstration.</p>
+
+        <div class="form-grid">
+
+            <label>Contact name *
+                <input name="name" required maxlength="100"
+                       placeholder="e.g. Community volunteer">
+            </label>
+
+            <label>Contact number (optional)
+                <input name="contact" maxlength="40"
+                       placeholder="Demo number only">
+            </label>
+
+            <label class="full">Reported location *
+    <input id="locationInput" name="location" required maxlength="150"
+           placeholder="Location will be detected from map">
+</label>
+
+            <label>Latitude (optional)
+                <input id="latitude" name="latitude" type="number"
+                       step="any" min="-90" max="90"
+                       placeholder="30.2650">
+            </label>
+
+            <label>Longitude (optional)
+                <input id="longitude" name="longitude" type="number"
+                       step="any" min="-180" max="180"
+                       placeholder="71.4900">
+            </label>
+
+        </div>
+
+        <h3 style="margin-top:24px;">📍 Pin the request location</h3>
+        <p class="map-instructions">
+            Click anywhere on the map to place a pin.
+            You can move the pin to adjust its location.
+        </p>
+
+        <div id="requestMap"></div>
+
+        <p id="selectedLocation" class="map-instructions">
+            No map location selected yet.
+        </p>
+
+    </div>
+
+    <div class="form-section">
+        <h3>Assistance required</h3>
+        <p>Select the main need and describe the situation briefly.</p>
+
+        <div class="form-grid">
+
+            <label>Type of need *
+                <select name="need" required>
+                    <option value="">Choose a category</option>
+                    <option>Food</option>
+                    <option>Clean water</option>
+                    <option>Shelter</option>
+                    <option>Medical help</option>
+                    <option>Rescue</option>
+                    <option>Other</option>
+                </select>
+            </label>
+
+            <label>People affected
+                <input name="people" type="number" min="1"
+                       max="10000" value="1">
+            </label>
+
+            <label class="full">Situation details
+                <textarea name="details" rows="4" maxlength="500"
+                          placeholder="Use fictional demo information..."></textarea>
+            </label>
+
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a class="secondary-btn" href="{{ url_for('dashboard') }}">Cancel</a>
+        <button class="primary-btn" type="submit">
+            Submit demo request →
+        </button>
+    </div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const defaultLocation = [30.3753, 69.3451];
+
+    const latitudeInput = document.getElementById("latitude");
+    const longitudeInput = document.getElementById("longitude");
+    const selectedLocation = document.getElementById("selectedLocation");
+
+    const map = L.map("requestMap").setView(defaultLocation, 5);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    let marker = null;
+
+let geocodeTimer = null;
+let geocodeController = null;
+
+function detectAddress(lat, lng) {
+    clearTimeout(geocodeTimer);
+
+    if (geocodeController) {
+        geocodeController.abort();
+    }
+
+    selectedLocation.textContent = "Finding address...";
+
+    geocodeTimer = setTimeout(async function () {
+        geocodeController = new AbortController();
+
+        try {
+            const url =
+                "https://nominatim.openstreetmap.org/reverse" +
+                "?format=jsonv2&lat=" + lat +
+                "&lon=" + lng;
+
+            const response = await fetch(url, {
+                signal: geocodeController.signal
+            });
+
+            if (!response.ok) {
+                throw new Error("Address lookup failed");
+            }
+
+            const data = await response.json();
+
+            const address = data.address || {};
+            const city =
+                address.city ||
+                address.town ||
+                address.village ||
+                address.municipality ||
+                address.county ||
+                "";
+
+            const province =
+                address.state || "";
+
+            const country =
+                address.country || "";
+
+            const locationParts = [city, province, country]
+                .filter(Boolean);
+
+            if (locationParts.length > 0) {
+                locationInput.value = locationParts.join(", ");
+                selectedLocation.textContent =
+                    "Detected location: " + locationInput.value;
+            } else {
+                locationInput.value = "";
+                selectedLocation.textContent =
+                    "Address not found. Please enter it manually.";
+            }
+
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                selectedLocation.textContent =
+                    "Address lookup unavailable. Enter location manually.";
+            }
+        }
+    }, 1200);
+}
+
+
+    function placeMarker(lat, lng) {
+
+        if (marker) {
+            marker.setLatLng([lat, lng]);
+        } else {
+            marker = L.marker([lat, lng], {
+                draggable: true
+            }).addTo(map);
+
+            marker.on("dragend", function () {
+                const position = marker.getLatLng();
+                placeMarker(position.lat, position.lng);
+            });
+        }
+
+        latitudeInput.value = lat.toFixed(6);
+        longitudeInput.value = lng.toFixed(6);
+
+        selectedLocation.textContent =
+    "Selected coordinates: " +
+    lat.toFixed(6) + ", " + lng.toFixed(6);
+
+detectAddress(lat, lng);
+    }
+
+    map.on("click", function (event) {
+        placeMarker(event.latlng.lat, event.latlng.lng);
+    });
+
+    const existingLat = parseFloat(latitudeInput.value);
+    const existingLng = parseFloat(longitudeInput.value);
+
+    if (
+        Number.isFinite(existingLat) &&
+        Number.isFinite(existingLng) &&
+        existingLat >= -90 && existingLat <= 90 &&
+        existingLng >= -180 && existingLng <= 180
+    ) {
+        map.setView([existingLat, existingLng], 15);
+        placeMarker(existingLat, existingLng);
+    }
+
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 200);
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Applications | ReliefNet AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #07111f;
+            --border: rgba(148,190,205,.15);
+            --text: #edf7fa;
+            --muted: #91a8b8;
+            --teal: #35d6b4;
+            --green: #22c997;
+            --red: #ff6b79;
+            --yellow: #f5c66b;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background:
+                radial-gradient(ellipse at 10% 0%, rgba(26,123,119,.16), transparent 35%),
+                radial-gradient(ellipse at 90% 10%, rgba(37,90,145,.15), transparent 35%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 30px 20px 60px;
+        }
+
+        .container { max-width: 1250px; margin: auto; }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 18px 22px;
+            margin-bottom: 40px;
+            background: rgba(16,30,48,.82);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--teal);
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: rgba(53,214,180,.13);
+            font-size: 20px;
+        }
+
+        .topbar a {
+            color: #d5e8ee;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            padding: 11px 16px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .topbar a:hover {
+            background: rgba(53,214,180,.12);
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+
+        .hero { margin-bottom: 30px; }
+
+        .eyebrow {
+            color: var(--teal);
+            letter-spacing: 2.5px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        h1 {
+            font-size: clamp(30px,5vw,44px);
+            letter-spacing: -1.5px;
+            margin: 12px 0;
+        }
+
+        .hero p {
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 30px 0 18px;
+        }
+
+        .section-heading h2 { font-size: 19px; }
+        .section-heading span { font-size: 12px; color: var(--muted); }
+
+        .flash {
+            padding: 14px 17px;
+            border-radius: 10px;
+            margin-bottom: 13px;
+            background: rgba(34,201,151,.13);
+            border: 1px solid rgba(34,201,151,.25);
+            color: #a9f5df;
+            font-size: 13px;
+        }
+
+        .flash.error {
+            background: rgba(255,107,121,.12);
+            border-color: rgba(255,107,121,.25);
+            color: #ffd1d6;
+        }
+
+        .applications {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(310px,1fr));
+            gap: 22px;
+        }
+
+        .application {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg,#13253a,#0e1b2c);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            padding: 24px;
+            transition: .25s;
+            animation: appear .5s ease both;
+        }
+
+        .application::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg,var(--teal),transparent);
+        }
+
+        .application:hover {
+            transform: translateY(-4px);
+            border-color: rgba(53,214,180,.4);
+            box-shadow: 0 16px 35px rgba(0,0,0,.22);
+        }
+
+        .app-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .application h2 {
+            font-size: 19px;
+            line-height: 1.4;
+            margin-bottom: 7px;
+            overflow-wrap: anywhere;
+        }
+
+        .app-subtitle { color: var(--muted); font-size: 12px; }
+
+        .app-id {
+            display: inline-block;
+            font-size: 11px;
+            color: var(--muted);
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 6px 9px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: rgba(245,198,107,.13);
+            color: var(--yellow);
+            border: 1px solid rgba(245,198,107,.2);
+        }
+
+        .status.Approved {
+            background: rgba(34,201,151,.12);
+            color: #8af0ca;
+        }
+
+        .status.Rejected {
+            background: rgba(255,107,121,.12);
+            color: #ffabb3;
+        }
+
+        .status.More {
+            background: rgba(80,160,255,.12);
+            color: #9bcaff;
+        }
+
+        .details {
+            display: grid;
+            padding: 8px 13px;
+            border-radius: 11px;
+            background: rgba(4,13,25,.28);
+            border: 1px solid rgba(148,190,205,.08);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(148,190,205,.09);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row strong { color: #a7bdc9; flex-shrink: 0; }
+        .detail-row span { text-align: right; overflow-wrap: anywhere; }
+
+        .submitted {
+            margin-top: 15px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .review-form {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .review-form label {
+            display: block;
+            color: #b8cbd5;
+            font-size: 11px;
+            font-weight: 700;
+            margin: 13px 0 7px;
+        }
+
+        .review-form textarea {
+            width: 100%;
+            min-height: 75px;
+            resize: vertical;
+            background: rgba(4,13,25,.55);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 11px;
+            font-family: inherit;
+            font-size: 12px;
+            line-height: 1.6;
+            outline: none;
+        }
+
+        .review-form textarea:focus { border-color: var(--teal); }
+        .review-form textarea::placeholder { color: #718898; }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 9px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        button:hover { transform: translateY(-2px); }
+
+        .approve {
+            background: linear-gradient(135deg,#35d6b4,#20b995);
+            color: #06221d;
+        }
+
+        .reject {
+            background: rgba(255,107,121,.12);
+            color: #ffabb3;
+            border-color: rgba(255,107,121,.25);
+        }
+
+        .more-info {
+            grid-column: 1 / -1;
+            background: rgba(80,160,255,.12);
+            color: #a9d1ff;
+            border-color: rgba(80,160,255,.25);
+        }
+
+        .decision-box {
+            margin-top: 17px;
+            padding: 13px;
+            border-radius: 10px;
+            background: rgba(4,13,25,.3);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .decision-box strong {
+            display: block;
+            color: var(--teal);
+            margin-bottom: 4px;
+        }
+
+        .decision-box p {
+            color: #c4d5dd;
+            overflow-wrap: anywhere;
+            margin-top: 5px;
+        }
+
+        .locked-note {
+            margin-top: 15px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .empty {
+            padding: 65px 20px;
+            background: linear-gradient(145deg,#13253a,#0e1b2c);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            text-align: center;
+        }
+
+        .empty-icon { font-size: 38px; margin-bottom: 15px; }
+        .empty h2 { margin-bottom: 10px; font-size: 21px; }
+        .empty p { color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+        footer {
+            text-align: center;
+            margin-top: 45px;
+            color: #627b8b;
+            font-size: 11px;
+        }
+
+        @keyframes appear {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media(max-width:480px) {
+            body { padding: 18px 12px 40px; }
+            .topbar { padding: 14px; margin-bottom: 30px; }
+            .applications { grid-template-columns: 1fr; }
+            .application { padding: 19px; }
+            .detail-row { flex-direction: column; gap: 3px; }
+            .detail-row span { text-align: left; }
+            .actions { grid-template-columns: 1fr; }
+            .more-info { grid-column: auto; }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            *,*::before,*::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-icon">✦</span>
+            RELIEFNET AI
+        </div>
+        <a href="/">← Main Dashboard</a>
+    </header>
+
+    <section class="hero">
+        <div class="eyebrow">ADMINISTRATION PANEL / VOLUNTEER NETWORK</div>
+        <h1>Volunteer Applications</h1>
+        <p>Review applicants, provide feedback, and manage volunteer decisions.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if applications %}
+        <div class="section-heading">
+            <h2>Application Records</h2>
+            <span>Review each application carefully</span>
+        </div>
+
+        <section class="applications">
+
+            {% for application in applications %}
+                <article class="application">
+
+                    <div class="app-top">
+                        <div>
+                            <h2>{{ application.name }}</h2>
+                            <div class="app-subtitle">Volunteer applicant</div>
+                        </div>
+
+                        <span class="status {% if application.status == 'Approved' %}Approved{% elif application.status == 'Rejected' %}Rejected{% elif application.status == 'More Information Required' %}More{% endif %}">
+                            {{ application.status }}
+                        </span>
+                    </div>
+
+                    <div class="app-id">APPLICATION #{{ application.id }}</div>
+
+                    <div class="details" style="margin-top:15px;">
+                        <div class="detail-row">
+                            <strong>Contact</strong>
+                            <span>{{ application.phone }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Location</strong>
+                            <span>{{ application.location }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Skills</strong>
+                            <span>{{ application.skills }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Availability</strong>
+                            <span>{{ application.availability }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Experience</strong>
+                            <span>{{ application.experience or "Not provided" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="submitted">
+                        Submitted:
+                        {{ application.created_at.strftime("%d %b %Y, %I:%M %p") if application.created_at else "Date unavailable" }}
+
+                        {% if application.reviewed_at %}
+                            <br>
+                            Last reviewed:
+                            {{ application.reviewed_at.strftime("%d %b %Y, %I:%M %p") }}
+                        {% endif %}
+                    </div>
+
+                    {% if application.status in ["Pending", "More Information Required"] %}
+
+                        <form class="review-form"
+                              method="POST"
+                              action="{{ url_for('review_volunteer_application', application_id=application.id) }}"
+                              onsubmit="return validateReview(event, this)">
+
+                            <label>Rejection reason (required when rejecting)</label>
+                            <textarea
+                                name="rejection_reason"
+                                maxlength="250"
+                                placeholder="Explain the reason if rejecting...">{{ application.rejection_reason or "" }}</textarea>
+
+                            <label>Private reviewer comments (admin only)</label>
+                            <textarea
+                                name="reviewer_comments"
+                                maxlength="1000"
+                                placeholder="Internal notes for the admin...">{{ application.reviewer_comments or "" }}</textarea>
+
+                            <label>Message visible to applicant</label>
+                            <textarea
+                                name="applicant_message"
+                                maxlength="1000"
+                                placeholder="Write feedback the volunteer will see...">{{ application.applicant_message or "" }}</textarea>
+
+                            <div class="actions">
+                                <button class="approve"
+                                        type="submit"
+                                        name="action"
+                                        value="approve"
+                                        onclick="return confirm('Approve this applicant?')">
+                                    ✓ Approve
+                                </button>
+
+                                <button class="reject"
+                                        type="submit"
+                                        name="action"
+                                        value="reject">
+                                    ✕ Reject
+                                </button>
+
+                                <button class="more-info"
+                                        type="submit"
+                                        name="action"
+                                        value="request_information"
+                                        onclick="return confirm('Request more information from this applicant?')">
+                                    ↗ Request More Information
+                                </button>
+                            </div>
+                        </form>
+
+                    {% else %}
+
+                        <div class="decision-box">
+                            <strong>Review decision: {{ application.status }}</strong>
+
+                            {% if application.status == "Rejected" and application.rejection_reason %}
+                                <p><b>Rejection reason:</b> {{ application.rejection_reason }}</p>
+                            {% endif %}
+
+                            {% if application.applicant_message %}
+                                <p><b>Message sent to applicant:</b> {{ application.applicant_message }}</p>
+                            {% endif %}
+
+                            {% if application.reviewer_comments %}
+                                <p><b>Private admin comments:</b> {{ application.reviewer_comments }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="locked-note">
+                            This application has received a final decision. Its review actions are locked.
+                        </div>
+
+                    {% endif %}
+
+                </article>
+            {% endfor %}
+
+        </section>
+
+    {% else %}
+
+        <section class="empty">
+            <div class="empty-icon">✦</div>
+            <h2>No Applications Yet</h2>
+            <p>New volunteer applications will appear here when people apply to join your relief network.</p>
+        </section>
+
+    {% endif %}
+
+    <footer>
+        RELIEFNET AI · COMMUNITY SUPPORT & VOLUNTEER COORDINATION
+    </footer>
+
+</div>
+
+<script>
+function validateReview(event, form) {
+    const action = event.submitter ? event.submitter.value : "";
+
+    if (action === "reject") {
+        const reason = form.querySelector('[name="rejection_reason"]').value.trim();
+
+        if (!reason) {
+            alert("Please enter a rejection reason before rejecting this application.");
+            return false;
+        }
+
+        return confirm("Reject this application with the reason provided?");
+    }
+
+    return true;
+}
+</script>
+
+</body>
+</html>

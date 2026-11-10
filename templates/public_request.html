@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReliefNet | Request Assistance</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #172033;
+        }
+        header {
+            background: #10243b;
+            color: white;
+            padding: 22px 7%;
+        }
+        header h1 { margin: 0; font-size: 25px; }
+        header p { margin: 7px 0 0; color: #cbd5e1; }
+        .hero {
+            background: linear-gradient(120deg, #123a5a, #087e83);
+            color: white;
+            padding: 48px 7%;
+        }
+        .hero h2 { font-size: 34px; margin: 0 0 12px; }
+        .hero p { max-width: 650px; line-height: 1.7; }
+        main {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 18px;
+        }
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(15, 35, 60, .08);
+        }
+        .form-card h2 { margin-top: 0; }
+        .field { margin-bottom: 19px; }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        textarea { min-height: 110px; resize: vertical; }
+        button {
+            background: #087e83;
+            color: white;
+            border: 0;
+            padding: 15px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover { background: #06666a; }
+        .notice {
+            background: #e8f5f5;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 22px;
+            color: #14565a;
+            line-height: 1.5;
+        }
+        .flash {
+            background: #e0f2e8;
+            padding: 13px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+        @media(max-width: 600px) {
+            .hero h2 { font-size: 27px; }
+            .form-card { padding: 20px; }
+        }
+
+/* RELIEFNET — PUBLIC PORTAL PROFESSIONAL UPGRADE */
+
+body {
+    background:
+        radial-gradient(circle at 90% 5%, #dcefeb, transparent 30%),
+        #f1f5f9;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+header {
+    background: linear-gradient(110deg, #0b1c32, #173b50);
+    padding: 24px 7%;
+    box-shadow: 0 5px 20px rgba(15,35,55,.12);
+}
+
+header h1 {
+    letter-spacing: -.6px;
+    font-weight: 800;
+}
+
+.hero {
+    background: linear-gradient(120deg, #102b45, #087e83);
+    padding-top: 58px;
+    padding-bottom: 58px;
+}
+
+.hero h2 {
+    font-size: 38px;
+    letter-spacing: -1px;
+}
+
+.hero p {
+    color: #d9f1f0;
+}
+
+main {
+    max-width: 900px;
+    margin-top: -15px;
+    position: relative;
+}
+
+.form-card {
+    border: 1px solid #e2eaf0;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(15,35,55,.09);
+    animation: portalEnter .45s ease-out;
+}
+
+.form-card h2 {
+    color: #123e55;
+    font-size: 25px;
+    margin-bottom: 22px;
+}
+
+.field {
+    margin-bottom: 22px;
+}
+
+label {
+    color: #263b50;
+    font-size: 14px;
+}
+
+input, select, textarea {
+    border: 1px solid #d6e0e8;
+    border-radius: 9px;
+    background: #fbfdff;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+    background: white;
+}
+
+.notice {
+    border-left: 4px solid #0d9488;
+    background: #e9f7f5;
+    border-radius: 9px;
+}
+
+button {
+    background: linear-gradient(110deg, #087e83, #0d9488);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(8,126,131,.18);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+button:hover {
+    background: linear-gradient(110deg, #06666a, #087e83);
+    transform: translateY(-2px);
+    box-shadow: 0 9px 20px rgba(8,126,131,.24);
+}
+
+.flash {
+    border-left: 4px solid #16a36b;
+}
+
+footer {
+    font-size: 13px;
+    letter-spacing: .3px;
+}
+
+@keyframes portalEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:600px) {
+    .hero {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .hero h2 {
+        font-size: 28px;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ReliefNet AI</h1>
+    <p>Community support when it matters most</p>
+</header>
+
+<section class="hero">
+    <h2>We're here to help.</h2>
+    <p>
+        If you or your community needs assistance, submit a relief
+        request below. Our relief coordination team will review it.
+    </p>
+</section>
+
+<main>
+    <section class="form-card">
+        <h2>Request Relief Assistance</h2>
+
+        <div class="notice">
+            Please provide accurate information. Submitting this form
+            does not guarantee immediate assistance. Requests are
+            reviewed by the relief coordination team.
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="field">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="field">
+                <label for="contact">Contact Number</label>
+                <input type="tel" id="contact" name="contact">
+            </div>
+
+            <div class="field">
+                <label for="need">Type of Assistance *</label>
+                <select id="need" name="need" required>
+                    <option value="">Select assistance</option>
+                    <option value="Food">Food and clean water</option>
+                    <option value="Medical help">Medical assistance</option>
+                    <option value="Shelter">Emergency shelter</option>
+                    <option value="Rescue">Rescue assistance</option>
+                    <option value="Other">Other essential needs</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="location">Location / Address *</label>
+                <input type="text" id="location" name="location"
+                       placeholder="Area, street, city" required>
+            </div>
+
+            <div class="field">
+                <label for="people">Number of People Affected</label>
+                <input type="number" id="people" name="people"
+                       min="1" value="1">
+            </div>
+
+            <div class="field">
+                <label for="details">Describe Your Situation</label>
+                <textarea id="details" name="details"
+                          placeholder="Explain what assistance is needed..."></textarea>
+            </div>
+
+            <button type="submit">Submit Relief Request</button>
+
+        </form>
+    </section>
+</main>
+
+<footer>
+    ReliefNet AI · Supporting communities through coordinated relief
+</footer>
+
+</body>
+</html>

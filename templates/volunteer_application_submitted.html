@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Submitted | ReliefNet AI</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: #071522;
+            color: #eaf4f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 540px;
+            padding: 38px;
+            border: 1px solid #244454;
+            border-radius: 20px;
+            background: #102536;
+            text-align: center;
+        }
+
+        .check {
+            font-size: 48px;
+            color: #35d6a0;
+        }
+
+        h1 { margin-bottom: 10px; }
+
+        p {
+            color: #b6cbd5;
+            line-height: 1.6;
+        }
+
+        .code {
+            margin: 24px 0;
+            padding: 18px;
+            border: 1px dashed #35d6a0;
+            border-radius: 12px;
+            background: #071a27;
+            overflow-wrap: anywhere;
+            font-size: 19px;
+            font-weight: bold;
+            color: #62edbd;
+        }
+
+        button, .link {
+            display: inline-block;
+            margin: 6px;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 9px;
+            background: #21bd91;
+            color: #06231d;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .secondary {
+            background: #244454;
+            color: white;
+        }
+
+        .warning {
+            font-size: 13px;
+            color: #f5cc79;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="check">✓</div>
+        <h1>Application Submitted!</h1>
+
+        <p>
+            Thank you for joining ReliefNet AI.
+            Your volunteer application has been received.
+        </p>
+
+        <p>Your private application tracking code:</p>
+
+        <div class="code" id="trackingCode">{{ application.tracking_token }}</div>
+
+        <button onclick="copyCode()">Copy Tracking Code</button>
+
+        <p class="warning">
+            Save this code somewhere safe. You will need it to check your application status.
+        </p>
+
+        <a class="link" href="{{ url_for('application_status') }}">
+            Track My Application
+        </a>
+
+        <br>
+
+        <a class="link secondary" href="{{ url_for('volunteer_apply') }}">
+            Back to Portal
+        </a>
+    </main>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById("trackingCode").innerText;
+
+            navigator.clipboard.writeText(code)
+                .then(() => alert("Tracking code copied!"))
+                .catch(() => alert("Please select and copy the tracking code manually."));
+        }
+    </script>
+</body>
+</html>

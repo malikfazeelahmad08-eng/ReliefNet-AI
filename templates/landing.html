@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | ReliefNet AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #08131f;
+            color: #f4f7fb;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .nav {
+            height: 85px;
+            padding: 0 8%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #243343;
+        }
+
+        .brand {
+            font: 800 25px Manrope, sans-serif;
+            letter-spacing: -1px;
+        }
+
+        .brand span { color: #38d6ad; }
+
+        .nav a, .btn {
+            text-decoration: none;
+            color: white;
+            background: #159b7b;
+            padding: 13px 23px;
+            border-radius: 9px;
+            font-weight: 700;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: auto;
+            padding: 110px 30px 75px;
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .tag {
+            color: #38d6ad;
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-size: 12px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font: 800 clamp(42px, 6vw, 72px) Manrope, sans-serif;
+            line-height: 1.12;
+            margin-bottom: 25px;
+        }
+
+        h1 span { color: #38d6ad; }
+
+        .description {
+            color: #a9b8c8;
+            line-height: 1.9;
+            max-width: 620px;
+            font-size: 16px;
+            margin-bottom: 35px;
+        }
+
+        .hero-card {
+            background: linear-gradient(145deg, #142b3a, #10202e);
+            border: 1px solid #294353;
+            padding: 35px;
+            border-radius: 22px;
+        }
+
+        .hero-card h2 {
+            font: 800 23px Manrope, sans-serif;
+            margin-bottom: 20px;
+        }
+
+        .feature {
+            padding: 17px 0;
+            border-bottom: 1px solid #30414d;
+            color: #c5d2dd;
+        }
+
+        .feature:last-child { border: none; }
+
+        .feature strong {
+            color: #38d6ad;
+            margin-right: 10px;
+        }
+
+        .section {
+            padding: 45px 8% 85px;
+            background: #0c1a27;
+        }
+
+        .section h2 {
+            font: 800 30px Manrope, sans-serif;
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .cards {
+            max-width: 1100px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: #142535;
+            padding: 28px;
+            border: 1px solid #294052;
+            border-radius: 15px;
+        }
+
+        .card h3 {
+            color: #38d6ad;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: #a9b8c8;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #7f92a5;
+            font-size: 12px;
+        }
+
+        @media(max-width: 750px) {
+            .hero { grid-template-columns: 1fr; padding-top: 70px; }
+            .cards { grid-template-columns: 1fr; }
+            .nav { padding: 0 5%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav">
+        <div class="brand">ReliefNet<span>AI</span></div>
+        <a href="{{ url_for('login') }}">Administrator Login →</a>
+    </nav>
+
+    <section class="hero">
+
+        <div>
+            <div class="tag">HUMANITARIAN RESPONSE NETWORK</div>
+
+            <h1>
+                Technology for a
+                <span>Safer Tomorrow.</span>
+            </h1>
+
+            <p class="description">
+                ReliefNet AI is an intelligent humanitarian response
+                demonstration platform designed to coordinate relief
+                requests, manage volunteers, monitor resources and
+                support faster emergency response decisions.
+            </p>
+
+            <a class="btn" href="{{ url_for('login') }}">
+                Enter ReliefNet AI →
+            </a>
+        </div>
+
+        <div class="hero-card">
+            <h2>One Platform. Multiple Solutions.</h2>
+
+            <div class="feature">
+                <strong>01</strong> AI-assisted request prioritization
+            </div>
+
+            <div class="feature">
+                <strong>02</strong> Interactive emergency dashboard
+            </div>
+
+            <div class="feature">
+                <strong>03</strong> Volunteer coordination
+            </div>
+
+            <div class="feature">
+                <strong>04</strong> Resource inventory management
+            </div>
+
+            <div class="feature">
+                <strong>05</strong> Flood simulation demonstration
+            </div>
+        </div>
+
+    </section>
+
+    <section class="section">
+
+        <h2>Built for Coordinated Relief</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Smart Monitoring</h3>
+                <p>
+                    View relief requests, their status and suggested
+                    priority levels from one dashboard.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Volunteer Network</h3>
+                <p>
+                    Review applications, organize volunteers and
+                    coordinate assignments.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Resource Management</h3>
+                <p>
+                    Track available supplies and demonstrate
+                    inventory updates.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+        RELIEFNET AI · HACKATHON DEMONSTRATION · NOT FOR REAL EMERGENCY DISPATCH
+    </footer>
+
+</body>
+</html>

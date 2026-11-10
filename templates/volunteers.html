@@ -1,0 +1,505 @@
+
+{% extends "base.html" %}
+
+{% block title %}Volunteer Network · ReliefNet AI{% endblock %}
+{% block page_title %}Volunteer Network{% endblock %}
+
+{% block head %}
+<style>
+.vol-page { color:#e8eef7; }
+
+.vol-page .vol-hero {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    padding:30px;
+    margin-bottom:25px;
+    border-radius:18px;
+    background:linear-gradient(120deg,#0b1c32,#12465a,#087e83);
+    border:1px solid #286276;
+    box-shadow:0 12px 30px rgba(0,0,0,.16);
+    animation:volunteerEnter .45s ease-out;
+}
+
+.vol-page .eyebrow {
+    color:#5eead4;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.5px;
+}
+
+.vol-page .vol-hero h2 {
+    font-size:31px;
+    letter-spacing:-.8px;
+    margin:10px 0;
+}
+
+.vol-page .vol-hero p {
+    color:#c0d8df;
+    font-size:13px;
+}
+
+.vol-page .hero-icon {
+    font-size:52px;
+    filter:drop-shadow(0 5px 10px rgba(0,0,0,.2));
+}
+
+.vol-page .section-heading {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:25px 0 15px;
+}
+
+.vol-page .section-heading h2 {
+    margin:0;
+    font-size:19px;
+    letter-spacing:-.4px;
+}
+
+.vol-page .section-heading p {
+    color:#91a3b9;
+    font-size:12px;
+    margin:5px 0 0;
+}
+
+.vol-page .vol-stats {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:24px;
+}
+
+.vol-page .vol-stat {
+    background:linear-gradient(145deg,#192f45,#102337);
+    border:1px solid #253d54;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 7px 20px rgba(0,0,0,.10);
+    transition:transform .25s ease,border-color .25s ease;
+}
+
+.vol-page .vol-stat:hover {
+    transform:translateY(-4px);
+    border-color:#14b8a6;
+}
+
+.vol-page .vol-stat span {
+    color:#9eb0c4;
+    font-size:12px;
+}
+
+.vol-page .vol-stat strong {
+    display:block;
+    color:white;
+    font-size:32px;
+    letter-spacing:-.8px;
+    margin-top:9px;
+}
+
+.vol-page .available-number { color:#4ade80!important; }
+.vol-page .assigned-number { color:#fbbf24!important; }
+
+.vol-page .panel {
+    background:#14263a;
+    border:1px solid #253d54;
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:16px;
+    box-shadow:0 9px 25px rgba(0,0,0,.10);
+}
+
+.vol-page .register-grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.vol-page .field { margin-bottom:15px; }
+
+.vol-page label {
+    display:block;
+    color:#aebfd0;
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.vol-page input,
+.vol-page select {
+    width:100%;
+    box-sizing:border-box;
+    background:#1b3045;
+    color:#e8eef7;
+    border:1px solid #40566d;
+    padding:12px;
+    border-radius:8px;
+    font-size:13px;
+    transition:border-color .2s ease,box-shadow .2s ease;
+}
+
+.vol-page input:focus,
+.vol-page select:focus {
+    outline:none;
+    border-color:#2dd4bf;
+    box-shadow:0 0 0 3px rgba(45,212,191,.12);
+}
+
+.vol-page select option {
+    background:#1b3045;
+    color:#e8eef7;
+}
+
+.vol-page .primary-btn {
+    display:inline-block;
+    background:#14b8a6;
+    color:#062c30;
+    border:0;
+    padding:12px 17px;
+    border-radius:8px;
+    font-weight:800;
+    font-size:12px;
+    cursor:pointer;
+    text-decoration:none;
+    transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+}
+
+.vol-page .primary-btn:hover {
+    background:#5eead4;
+    transform:translateY(-2px);
+    box-shadow:0 6px 15px rgba(0,0,0,.16);
+}
+
+.vol-page .release-btn {
+    width:100%;
+    background:#33475c;
+    color:#f8fafc;
+    border:0;
+    padding:11px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+    transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.vol-page .release-btn:hover {
+    background:#475f78;
+    transform:translateY(-2px);
+    box-shadow:0 6px 15px rgba(0,0,0,.16);
+}
+
+.vol-page .directory-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+}
+
+.vol-page .vol-card {
+    background:linear-gradient(145deg,#192f45,#112438);
+    border:1px solid #294158;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 7px 20px rgba(0,0,0,.09);
+    transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+
+.vol-page .vol-card:hover {
+    transform:translateY(-5px);
+    border-color:#2dd4bf;
+    box-shadow:0 14px 28px rgba(0,0,0,.18);
+}
+
+.vol-page .vol-card-top {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+}
+
+.vol-page .vol-identity {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.vol-page .avatar {
+    width:43px;
+    height:43px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    background:linear-gradient(135deg,#155e75,#0d9488);
+    color:#5eead4;
+    box-shadow:0 4px 12px rgba(13,148,136,.2);
+    font-weight:900;
+    font-size:17px;
+}
+
+.vol-page .vol-identity h3 {
+    color:#f1f5f9;
+    font-size:15px;
+    margin:0 0 5px;
+    overflow-wrap:anywhere;
+}
+
+.vol-page .vol-identity p {
+    color:#91a3b9;
+    font-size:11px;
+    margin:0;
+}
+
+.vol-page .status {
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.4px;
+    padding:7px 9px;
+    border-radius:7px;
+    white-space:nowrap;
+}
+
+.vol-page .status.available {
+    color:#86efac;
+    background:#194438;
+}
+
+.vol-page .status.assigned {
+    color:#fcd34d;
+    background:#493d26;
+}
+
+.vol-page .vol-details {
+    border-top:1px solid #293e53;
+    margin-top:17px;
+    padding-top:15px;
+}
+
+.vol-page .detail-row {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+    font-size:11px;
+}
+
+.vol-page .detail-row span { color:#91a3b9; }
+
+.vol-page .detail-row b {
+    color:#dce6f0;
+    text-align:right;
+    overflow-wrap:anywhere;
+}
+
+.vol-page .assignment-form { margin-top:17px; }
+
+.vol-page .assignment-form .primary-btn,
+.vol-page .assignment-form .release-btn {
+    width:100%;
+}
+
+.vol-page .empty-state {
+    text-align:center;
+    padding:40px 15px;
+    color:#91a3b9;
+    background:#14263a;
+    border:1px dashed #40566d;
+    border-radius:13px;
+}
+
+.vol-page .empty-state strong {
+    display:block;
+    color:#e8eef7;
+    margin-bottom:8px;
+}
+
+.vol-page .empty-icon {
+    font-size:30px;
+    margin-bottom:12px;
+}
+
+@keyframes volunteerEnter {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+@media(max-width:850px) {
+    .vol-page .directory-grid { grid-template-columns:1fr; }
+}
+
+@media(max-width:600px) {
+    .vol-page .vol-stats { gap:8px; }
+    .vol-page .vol-stat { padding:12px; }
+    .vol-page .vol-stat strong { font-size:23px; }
+    .vol-page .vol-hero { padding:22px; }
+    .vol-page .vol-hero h2 { font-size:24px; }
+    .vol-page .register-grid {
+        grid-template-columns:1fr;
+        gap:0;
+    }
+    .vol-page .hero-icon { font-size:37px; }
+    .vol-page .vol-card-top { flex-wrap:wrap; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="vol-page">
+
+    <section class="vol-hero">
+        <div>
+            <span class="eyebrow">COMMUNITY RESPONSE NETWORK</span>
+            <h2>Stronger Together.</h2>
+            <p>Connect skilled volunteers with communities that need assistance.</p>
+        </div>
+        <div class="hero-icon">🤝</div>
+    </section>
+
+    <section class="vol-stats">
+        <article class="vol-stat">
+            <span>Total Volunteers</span>
+            <strong>{{ volunteers|length }}</strong>
+        </article>
+
+        <article class="vol-stat">
+            <span>Available Volunteers</span>
+            <strong class="available-number">{{ volunteers|selectattr('status','equalto','Available')|list|length }}</strong>
+        </article>
+
+        <article class="vol-stat">
+            <span>Currently Assigned</span>
+            <strong class="assigned-number">{{ volunteers|selectattr('status','equalto','Assigned')|list|length }}</strong>
+        </article>
+    </section>
+
+    <div class="section-heading">
+        <div>
+            <h2>Register a Volunteer</h2>
+            <p>Add a volunteer profile to the community response network.</p>
+        </div>
+    </div>
+
+    <section class="panel">
+        <form method="POST">
+            <div class="register-grid">
+                <div class="field">
+                    <label>VOLUNTEER NAME</label>
+                    <input type="text" name="name"
+                           placeholder="e.g. Ali Khan" required>
+                </div>
+
+                <div class="field">
+                    <label>SKILL OR EXPERTISE</label>
+                    <select name="skill" required>
+                        <option value="">Select a skill</option>
+                        <option>First aid</option>
+                        <option>Food distribution</option>
+                        <option>Rescue support</option>
+                        <option>Transport</option>
+                        <option>General assistance</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>LOCATION</label>
+                    <input type="text" name="location"
+                           value="Multan" placeholder="City or area">
+                </div>
+            </div>
+
+            <button type="submit" class="primary-btn">
+                + Register Volunteer
+            </button>
+        </form>
+    </section>
+
+    <div class="section-heading">
+        <div>
+            <h2>Volunteer Directory</h2>
+            <p>{{ volunteers|length }} registered community members</p>
+        </div>
+    </div>
+
+    {% if volunteers %}
+    <section class="directory-grid">
+        {% for volunteer in volunteers %}
+        <article class="vol-card">
+
+            <div class="vol-card-top">
+                <div class="vol-identity">
+                    <div class="avatar">{{ volunteer.name[:1]|upper }}</div>
+                    <div>
+                        <h3>{{ volunteer.name }}</h3>
+                        <p>{{ volunteer.skill }}</p>
+                    </div>
+                </div>
+
+                <span class="status {% if volunteer.status == 'Available' %}available{% else %}assigned{% endif %}">
+                    ● {{ volunteer.status }}
+                </span>
+            </div>
+
+            <div class="vol-details">
+                <div class="detail-row">
+                    <span>Location</span>
+                    <b>{{ volunteer.location }}</b>
+                </div>
+
+                <div class="detail-row">
+                    <span>Volunteer ID</span>
+                    <b>#{{ volunteer.id }}</b>
+                </div>
+
+                {% if volunteer.status == "Available" %}
+                <form method="POST"
+                      action="{{ url_for('assign_volunteer', volunteer_id=volunteer.id) }}"
+                      class="assignment-form">
+
+                    <div class="field">
+                        <label>ASSIGN TO RELIEF REQUEST</label>
+                        <select name="request_id" required>
+                            <option value="">Choose a request</option>
+                            {% for item in requests %}
+                            <option value="{{ item.id }}">
+                                #{{ item.id }} — {{ item.need }} — {{ item.location }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="primary-btn">
+                        Assign Volunteer →
+                    </button>
+                </form>
+
+                {% else %}
+                <div class="detail-row">
+                    <span>Assigned Request</span>
+                    <b>#{{ volunteer.assigned_request_id }}</b>
+                </div>
+
+                <form method="POST"
+                      action="{{ url_for('release_volunteer', volunteer_id=volunteer.id) }}"
+                      class="assignment-form">
+                    <button type="submit" class="release-btn">
+                        Release Volunteer
+                    </button>
+                </form>
+                {% endif %}
+
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🤝</div>
+        <strong>No Volunteers Registered Yet</strong>
+        Register your first demo volunteer to populate the network.
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,785 @@
+
+{% extends "base.html" %}
+
+{% block title %}AI Command Centre | ReliefNet{% endblock %}
+{% block page_title %}AI Command Centre{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+
+<style>
+.command-intro {
+    background: linear-gradient(120deg,#102a43,#176b87);
+    color: white;
+    padding: 28px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+.command-intro h2 { margin: 8px 0; font-size: 27px; }
+.command-intro p { color: #d7eaf2; margin-bottom: 18px; }
+
+.simulate-btn {
+    background: #22c58b;
+    color: #062d25;
+    border: 0;
+    padding: 13px 20px;
+    border-radius: 9px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.command-stats {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.command-card,.panel {
+    background: white;
+    border: 1px solid #e7edf2;
+    border-radius: 13px;
+    padding: 20px;
+}
+
+.command-card small { color: #718096; }
+.command-card h2 { font-size: 29px; margin: 9px 0 0; }
+
+.map-panel { margin-bottom: 24px; }
+.map-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#reliefMap {
+    height: 390px;
+    width: 100%;
+    border-radius: 11px;
+    margin-top: 16px;
+    z-index: 1;
+}
+
+.map-legend {
+    display: flex;
+    gap: 17px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.live-label {
+    color: #16845d;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.lower-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+}
+
+.analysis-row,.activity-row {
+    padding: 16px 0;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.analysis-row:last-child,.activity-row:last-child {
+    border-bottom: 0;
+}
+
+.priority {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.priority.High { background: #ffe4e4; color: #bd3030; }
+.priority.Medium { background: #fff1cf; color: #946200; }
+.priority.Low { background: #dff7eb; color: #18764d; }
+
+.analysis-reason,.activity-detail {
+    color: #66788a;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.activity-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.activity-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: #edf5fa;
+    border-radius: 9px;
+}
+
+.demo-notice {
+    color: #718096;
+    font-size: 12px;
+    margin-top: 17px;
+}
+
+.respond-form {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e7edf2;
+}
+
+.respond-form select {
+    width: 100%;
+    padding: 8px;
+    margin: 7px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+}
+
+.respond-form button {
+    width: 100%;
+    padding: 9px;
+    border: 0;
+    border-radius: 7px;
+    background: #176b87;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media(max-width:900px) {
+    .lower-grid { grid-template-columns: 1fr; }
+}
+
+@media(max-width:750px) {
+    .command-stats { grid-template-columns: repeat(2,1fr); }
+    #reliefMap { height: 320px; }
+}
+.map-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 14px;
+    margin: 18px 0;
+    padding: 16px;
+    background: #111c2e;
+    border: 1px solid #26364d;
+    border-radius: 12px;
+}
+
+.map-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.map-filters select,
+.map-filters input {
+    min-width: 190px;
+    padding: 10px 12px;
+    color: white;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 7px;
+    outline: none;
+}
+
+.map-filters button {
+    padding: 11px 17px;
+    color: white;
+    background: #0d9488;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+/* RELIEFNET AI — COMMAND CENTRE PROFESSIONAL UPGRADE */
+
+.command-intro {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(120deg, #0b1c32, #123e55, #087e83);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 14px 35px rgba(15,35,55,.15);
+    animation: commandEnter .45s ease-out;
+}
+
+.command-intro h2 {
+    font-size: 30px;
+    letter-spacing: -.8px;
+}
+
+.command-intro small {
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    color: #8de5dc;
+}
+
+.command-stats {
+    gap: 18px;
+}
+
+.command-card {
+    background: linear-gradient(145deg, #ffffff, #f5f9fc);
+    border: 1px solid #e2eaf2;
+    border-radius: 15px;
+    box-shadow: 0 7px 22px rgba(15,35,55,.05);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.command-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 13px 28px rgba(15,35,55,.10);
+}
+
+.command-card h2 {
+    color: #123e55;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.command-card small {
+    font-weight: 700;
+    letter-spacing: .4px;
+}
+
+.panel {
+    border: 1px solid #e1e9f0;
+    border-radius: 16px;
+    box-shadow: 0 8px 26px rgba(15,35,55,.05);
+    transition: box-shadow .25s ease;
+}
+
+.panel:hover {
+    box-shadow: 0 13px 30px rgba(15,35,55,.09);
+}
+
+.panel h2 {
+    color: #142b43;
+    letter-spacing: -.4px;
+}
+
+#reliefMap {
+    border: 1px solid #dce5ed;
+    box-shadow: 0 5px 18px rgba(15,35,55,.07);
+}
+
+.map-filters {
+    background: linear-gradient(120deg, #10243a, #173b50);
+    border: 1px solid #29485f;
+    box-shadow: 0 7px 20px rgba(15,35,55,.10);
+}
+
+.map-filters select,
+.map-filters input {
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.map-filters select:focus,
+.map-filters input:focus {
+    border-color: #2dd4bf;
+    box-shadow: 0 0 0 3px rgba(45,212,191,.13);
+}
+
+.map-filters button,
+.respond-form button {
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.map-filters button:hover,
+.respond-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(13,148,136,.22);
+}
+
+.simulate-btn {
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.simulate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(34,197,139,.22);
+}
+
+.analysis-row,
+.activity-row {
+    transition: background .2s ease;
+}
+
+.analysis-row:hover,
+.activity-row:hover {
+    background: #f5f9fc;
+}
+
+.priority {
+    letter-spacing: .3px;
+}
+
+.live-label {
+    background: #e7f8ef;
+    padding: 7px 11px;
+    border-radius: 20px;
+}
+
+@keyframes commandEnter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:750px) {
+    .command-intro {
+        padding: 20px;
+    }
+
+    .command-intro h2 {
+        font-size: 23px;
+    }
+
+    .command-stats {
+        gap: 10px;
+    }
+
+    .command-card {
+        padding: 15px;
+    }
+
+    .map-filters select,
+    .map-filters input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .map-filters label {
+        width: 100%;
+    }
+
+    #reliefMap {
+        height: 320px;
+    }
+}
+
+</style>
+
+<section class="command-intro">
+    <small>RELIEFNET AI / EMERGENCY OPERATIONS</small>
+    <h2>Disaster Response Command Centre</h2>
+
+    <p>
+        Monitor incoming requests, review priority assessments
+        and coordinate a fictional emergency response.
+    </p>
+
+    <form method="POST" action="{{ url_for('simulate_flood') }}">
+        <button class="simulate-btn" type="submit">
+            ▶ Simulate Flood Emergency
+        </button>
+    </form>
+
+    <div class="demo-notice">
+        Simulation only. No real emergency reports or dispatches.
+    </div>
+</section>
+
+<section class="command-stats">
+    <div class="command-card">
+        <small>Total Requests</small>
+        <h2>{{ total }}</h2>
+    </div>
+
+    <div class="command-card">
+        <small>High Priority</small>
+        <h2>{{ high }}</h2>
+    </div>
+
+    <div class="command-card">
+        <small>Pending</small>
+        <h2>{{ pending }}</h2>
+    </div>
+
+    <div class="command-card">
+        <small>Resolved</small>
+        <h2>{{ resolved }}</h2>
+    </div>
+</section>
+
+<section class="panel map-panel">
+    <div class="map-heading">
+        <div>
+            <h2>Emergency Response Map</h2>
+            <p style="color:#718096;font-size:13px">
+                Relief requests from across Pakistan
+            </p>
+        </div>
+
+        <span class="live-label">● MAP AUTO-REFRESH</span>
+    </div>
+
+<div class="map-filters">
+    <label>
+        Filter by Province
+        <select id="provinceFilter">
+            <option value="all">All Pakistan</option>
+            <option value="Punjab">Punjab</option>
+            <option value="Sindh">Sindh</option>
+            <option value="Khyber Pakhtunkhwa">Khyber Pakhtunkhwa</option>
+            <option value="Balochistan">Balochistan</option>
+            <option value="Islamabad">Islamabad</option>
+            <option value="Gilgit-Baltistan">Gilgit-Baltistan</option>
+            <option value="Azad Kashmir">Azad Kashmir</option>
+        </select>
+    </label>
+
+    <label>
+        Search City
+        <input
+            type="text"
+            id="cityFilter"
+            placeholder="e.g. Karachi, Lahore..."
+        >
+    </label>
+
+    <button type="button" id="resetMapFilters">
+        Reset Filters
+    </button>
+</div>
+
+
+    <div id="reliefMap"></div>
+
+    <!-- Volunteer data is rendered as HTML, not inside JavaScript -->
+    <select id="availableVolunteerData" hidden>
+        {% for volunteer in available_volunteers %}
+        <option value="{{ volunteer.id }}">{{ volunteer.name }}</option>
+        {% endfor %}
+    </select>
+
+    <div class="map-legend">
+        <span><i class="legend-dot" style="background:#e34444"></i>High priority</span>
+        <span><i class="legend-dot" style="background:#e9ad32"></i>Medium priority</span>
+        <span><i class="legend-dot" style="background:#21a675"></i>Low priority</span>
+    </div>
+
+    <p class="demo-notice">
+        Map markers represent fictional demo records, not verified incidents.
+    </p>
+</section>
+
+<div class="lower-grid">
+
+    <section class="panel">
+        <h2>AI Priority Analysis</h2>
+
+        <p style="color:#718096;font-size:13px">
+            Transparent rules explain each priority assessment.
+        </p>
+
+        {% for analysis in analyses %}
+        {% set item = analysis.item %}
+
+        <div class="analysis-row">
+            <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                <div>
+                    <strong>#{{ item.id }} · {{ item.name }}</strong>
+                    <div style="color:#718096;font-size:13px;margin-top:5px">
+                        {{ item.need }} · {{ item.location }}
+                    </div>
+                </div>
+
+                <span class="priority {{ item.priority }}">
+                    {{ item.priority }} Priority
+                </span>
+            </div>
+
+            <div class="analysis-reason">
+                Assessment: {{ analysis.reason }}
+            </div>
+
+            <div class="analysis-reason">
+                Status: {{ item.status }} · People affected: {{ item.people }}
+            </div>
+        </div>
+
+        {% else %}
+        <p>No requests available.</p>
+        {% endfor %}
+    </section>
+
+    <section class="panel">
+        <h2>Emergency Activity Feed</h2>
+
+        <p style="color:#718096;font-size:13px">
+            Latest recorded relief requests
+        </p>
+
+        <div id="activityFeed">
+            {% for analysis in analyses[:8] %}
+            {% set item = analysis.item %}
+
+            <div class="activity-row">
+                <div class="activity-icon">◈</div>
+                <div>
+                    <strong>#{{ item.id }} · {{ item.need }}</strong>
+                    <div class="activity-detail">{{ item.location }}</div>
+                    <span class="priority {{ item.priority }}">
+                        {{ item.priority }}
+                    </span>
+                </div>
+            </div>
+
+            {% else %}
+            <p>No activity recorded yet.</p>
+            {% endfor %}
+        </div>
+
+        <p class="demo-notice" id="lastUpdated">
+            Waiting for map data...
+        </p>
+    </section>
+
+</div>
+
+<p class="demo-notice">
+    Prototype only. Priority rules are not validated emergency triage.
+    Never use this system for real-world emergency decisions.
+</p>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const map = L.map("reliefMap").setView([30.3753, 69.3451], 5);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 19
+    }).addTo(map);
+
+    const markers = L.layerGroup().addTo(map);
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[char];
+        });
+    }
+
+    function priorityColor(priority) {
+        if (priority === "High") return "#e34444";
+        if (priority === "Medium") return "#e9ad32";
+        return "#21a675";
+    }
+
+    // Read volunteer information from the hidden HTML select
+    const availableVolunteers = Array.from(
+        document.querySelectorAll("#availableVolunteerData option")
+    ).map(option => ({
+        id: option.value,
+        name: option.textContent
+    }));
+
+    
+function createPopup(item) {
+
+    let responseSection = "";
+
+    // Volunteer assignment
+    if (item.status !== "Resolved" && availableVolunteers.length > 0) {
+
+        const volunteerOptions = availableVolunteers.map(volunteer =>
+            '<option value="' + escapeHTML(volunteer.id) + '">' +
+            escapeHTML(volunteer.name) +
+            '</option>'
+        ).join("");
+
+        responseSection =
+            '<form class="respond-form" method="POST" ' +
+            'action="/volunteers/0/assign" ' +
+            'onsubmit="this.action=\'/volunteers/\' + this.elements.volunteer_id.value + \'/assign\'">' +
+
+            '<strong>Respond to this request</strong>' +
+
+            '<input type="hidden" name="request_id" value="' +
+            escapeHTML(item.id) + '">' +
+
+            '<select name="volunteer_id" required>' +
+            '<option value="">Select an available volunteer</option>' +
+            volunteerOptions +
+            '</select>' +
+
+            '<button type="submit">Assign Volunteer</button>' +
+            '</form>';
+
+    } else if (item.status !== "Resolved" && item.status !== "Assigned") {
+        responseSection = "<br><em>No available volunteers at the moment.</em>";
+    }
+
+    // Mark request as resolved
+    let statusSection = "";
+
+    if (item.status === "Assigned") {
+        statusSection =
+            '<form class="respond-form" method="POST" ' +
+            'action="/requests/' + escapeHTML(item.id) + '/status">' +
+
+            '<input type="hidden" name="status" value="Resolved">' +
+
+            '<button type="submit">Mark as Resolved</button>' +
+            '</form>';
+    }
+
+    return (
+        "<strong>Request #" + escapeHTML(item.id) +
+        " · " + escapeHTML(item.name) + "</strong><br>" +
+        escapeHTML(item.need) + "<br>" +
+        escapeHTML(item.location) + "<br>" +
+        "<strong>" + escapeHTML(item.priority) +
+        " Priority</strong><br>" +
+        "Status: " + escapeHTML(item.status) +
+        responseSection +
+        statusSection
+    );
+}
+
+
+    
+function updateDashboard() {
+
+    fetch("/api/requests")
+        .then(response => {
+            if (!response.ok) throw new Error("Could not load requests");
+            return response.json();
+        })
+        .then(items => {
+
+            markers.clearLayers();
+
+            // Read selected filters
+            const province = document.getElementById("provinceFilter").value;
+            const city = document.getElementById("cityFilter").value
+                .trim()
+                .toLowerCase();
+
+            // Filter requests using their saved location text
+            const filteredItems = items.filter(item => {
+
+                const location = (item.location || "").toLowerCase();
+
+                const matchesProvince =
+                    province === "all" ||
+                    location.includes(province.toLowerCase());
+
+                const matchesCity =
+                    city === "" ||
+                    location.includes(city);
+
+                return matchesProvince && matchesCity;
+            });
+
+
+            const located = filteredItems.filter(item =>
+                Number.isFinite(Number(item.latitude)) &&
+                Number.isFinite(Number(item.longitude)) &&
+                item.latitude !== null &&
+                item.longitude !== null
+            );
+            // Automatically zoom to matching requests
+if (located.length === 1) {
+    map.setView(
+        [located[0].latitude, located[0].longitude],
+        13
+    );
+} else if (located.length > 1) {
+    const bounds = L.latLngBounds(
+        located.map(item => [item.latitude, item.longitude])
+    );
+    map.fitBounds(bounds, { padding: [40, 40] });
+}
+
+            // Display filtered map markers
+            located.forEach(item => {
+
+                const marker = L.circleMarker(
+                    [item.latitude, item.longitude],
+                    {
+                        radius: 9,
+                        color: "#ffffff",
+                        weight: 2,
+                        fillColor: priorityColor(item.priority),
+                        fillOpacity: 0.95
+                    }
+                );
+
+                marker.bindPopup(createPopup(item));
+                marker.addTo(markers);
+            });
+
+            // Update activity feed using filtered requests
+            const feed = document.getElementById("activityFeed");
+
+            feed.innerHTML = filteredItems.slice(0, 8).map(item => `
+                <div class="activity-row">
+                    <div class="activity-icon">◈</div>
+                    <div>
+                        <strong>#${escapeHTML(item.id)} · ${escapeHTML(item.need)}</strong>
+                        <div class="activity-detail">${escapeHTML(item.location)}</div>
+                        <span class="priority ${["High","Medium","Low"].includes(item.priority) ? item.priority : "Low"}">
+                            ${escapeHTML(item.priority)}
+                        </span>
+                        <div class="activity-detail">Status: ${escapeHTML(item.status)}</div>
+                    </div>
+                </div>
+            `).join("") || "<p>No matching requests found.</p>";
+
+            document.getElementById("lastUpdated").textContent =
+                "Last updated: " + new Date().toLocaleTimeString() +
+                " · " + located.length + " mapped requests";
+
+        })
+        .catch(error => {
+            document.getElementById("lastUpdated").textContent =
+                "Map update unavailable. Check your connection.";
+            console.error(error);
+        });
+}
+
+
+    updateDashboard();
+    setInterval(updateDashboard, 10000);
+
+    setTimeout(() => map.invalidateSize(), 300);
+});
+</script>
+{% endblock %}

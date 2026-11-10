@@ -1,0 +1,667 @@
+
+{% extends "base.html" %}
+
+{% block title %}Resource Inventory | ReliefNet AI{% endblock %}
+{% block page_title %}Resource Management{% endblock %}
+
+{% block content %}
+
+<style>
+.resource-page {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    color: #eaf3fa;
+}
+
+.resource-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(115deg, #10263d, #155c65, #176d73);
+    border: 1px solid rgba(83, 220, 195, .2);
+    border-radius: 19px;
+    padding: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.14);
+}
+
+.resource-hero::after {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 50%;
+    right: 45px;
+    top: -155px;
+    box-shadow: 0 0 0 35px rgba(255,255,255,.025),
+                0 0 0 70px rgba(255,255,255,.02);
+}
+
+.resource-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.resource-hero .eyebrow {
+    color: #9af3df;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    font-weight: 800;
+}
+
+.resource-hero h2 {
+    color: #fff;
+    font-size: clamp(24px, 3vw, 34px);
+    margin: 13px 0 9px;
+    letter-spacing: -.7px;
+}
+
+.resource-hero p {
+    color: #d0e9e8;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.resource-hero-icon {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    font-size: 42px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.16);
+    width: 88px;
+    height: 88px;
+    border-radius: 22px;
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(8px);
+}
+
+.resource-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.resource-stat {
+    position: relative;
+    overflow: hidden;
+    background: #111f30;
+    border: 1px solid rgba(148,190,205,.15);
+    border-radius: 15px;
+    padding: 23px;
+    transition: .25s;
+}
+
+.resource-stat:hover {
+    transform: translateY(-4px);
+    border-color: rgba(53,214,180,.4);
+    box-shadow: 0 12px 28px rgba(0,0,0,.16);
+}
+
+.resource-stat::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(53,214,180,.06);
+    right: -30px;
+    bottom: -40px;
+}
+
+.resource-stat span {
+    color: #9db2c1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.resource-stat h2 {
+    font-size: 32px;
+    margin: 12px 0 5px;
+    color: #f3fbff;
+    letter-spacing: -.8px;
+}
+
+.resource-stat small {
+    color: #71899a;
+    font-size: 11px;
+}
+
+.resource-heading {
+    margin-bottom: 16px;
+}
+
+.resource-heading h2 {
+    font-size: 19px;
+    margin: 0 0 7px;
+    color: #eaf4fa;
+}
+
+.resource-heading p {
+    color: #91a8b8;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.resource-form-panel {
+    background: #111f30;
+    border: 1px solid rgba(148,190,205,.15);
+    border-radius: 16px;
+    padding: 25px;
+}
+
+.resource-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.resource-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.resource-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #c7d7e2;
+}
+
+.resource-field input,
+.resource-field select {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid #30445a;
+    border-radius: 9px;
+    padding: 11px 13px;
+    background: #0b1929;
+    color: #edf7fa;
+    font-size: 13px;
+    font-family: inherit;
+    transition: .2s;
+}
+
+.resource-field input::placeholder {
+    color: #71899a;
+}
+
+.resource-field input:focus,
+.resource-field select:focus {
+    outline: none;
+    border-color: #35d6b4;
+    box-shadow: 0 0 0 3px rgba(53,214,180,.1);
+}
+
+.resource-field select option {
+    background: #111f30;
+    color: white;
+}
+
+.resource-submit {
+    margin-top: 23px;
+}
+
+.resource-submit button {
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #35d6b4, #1bb995);
+    color: #06221d;
+    padding: 13px 22px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.resource-submit button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(35,201,151,.2);
+}
+
+.resource-filter-panel {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.resource-filter-panel input,
+.resource-filter-panel select {
+    width: 100%;
+    min-height: 47px;
+    padding: 12px 14px;
+    border: 1px solid #30445a;
+    border-radius: 9px;
+    background: #111f30;
+    color: #eaf3fa;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.resource-filter-panel input::placeholder {
+    color: #8197a8;
+}
+
+.resource-filter-panel input:focus,
+.resource-filter-panel select:focus {
+    outline: none;
+    border-color: #35d6b4;
+    box-shadow: 0 0 0 3px rgba(53,214,180,.08);
+}
+
+.resource-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.resource-card {
+    background: linear-gradient(145deg, #14253a, #101d2d);
+    border: 1px solid rgba(148,190,205,.15);
+    border-radius: 15px;
+    padding: 22px;
+    transition: .25s;
+    animation: resourceAppear .4s ease both;
+}
+
+.resource-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(53,214,180,.38);
+    box-shadow: 0 12px 25px rgba(0,0,0,.17);
+}
+
+.resource-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.resource-card h3 {
+    color: #edf7fa;
+    font-size: 16px;
+    margin: 0 0 8px;
+    overflow-wrap: anywhere;
+}
+
+.resource-card p {
+    color: #91a8b8;
+    font-size: 12px;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.resource-category {
+    display: inline-block;
+    background: rgba(53,214,180,.11);
+    border: 1px solid rgba(53,214,180,.2);
+    color: #8be9d3;
+    padding: 7px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.resource-quantity {
+    border-top: 1px solid rgba(148,190,205,.12);
+    margin-top: 20px;
+    padding-top: 16px;
+}
+
+.resource-quantity strong {
+    font-size: 31px;
+    color: #f1faff;
+}
+
+.resource-quantity small {
+    display: block;
+    margin-top: 3px;
+    color: #8199aa;
+    font-size: 11px;
+}
+
+.stock-warning,
+.stock-normal {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .4px;
+}
+
+.stock-warning {
+    background: rgba(255,165,90,.12);
+    color: #ffc28f;
+    border: 1px solid rgba(255,165,90,.2);
+}
+
+.stock-normal {
+    background: rgba(34,201,151,.12);
+    color: #8aebc8;
+    border: 1px solid rgba(34,201,151,.2);
+}
+
+.resource-empty {
+    background: #111f30;
+    border: 1px dashed #40576b;
+    border-radius: 15px;
+    padding: 45px 25px;
+    text-align: center;
+    color: #91a8b8;
+    grid-column: 1 / -1;
+}
+
+.resource-empty h3 {
+    color: #edf7fa;
+    margin: 12px 0 7px;
+    font-size: 17px;
+}
+
+.resource-empty p {
+    font-size: 12px;
+}
+
+.resource-no-results {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 25px;
+    text-align: center;
+    color: #91a8b8;
+    border: 1px dashed #40576b;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.resource-note {
+    font-size: 10px;
+    color: #71899a;
+    letter-spacing: .5px;
+}
+
+@keyframes resourceAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 750px) {
+    .resource-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .resource-list,
+    .resource-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .resource-hero {
+        padding: 23px;
+    }
+
+    .resource-hero-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 32px;
+    }
+
+    .resource-filter-panel {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 430px) {
+    .resource-hero-icon {
+        display: none;
+    }
+
+    .resource-form-panel {
+        padding: 18px;
+    }
+
+    .resource-card {
+        padding: 18px;
+    }
+
+    .resource-card-top {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .resource-stat,
+    .resource-card,
+    .resource-submit button {
+        transition: none;
+        animation: none;
+    }
+}
+</style>
+
+<div class="resource-page">
+
+    <section class="resource-hero">
+        <div class="resource-hero-content">
+            <span class="eyebrow">RELIEFNET AI / SUPPLY COORDINATION</span>
+            <h2>Relief Supply Operations</h2>
+            <p>Monitor, organize and manage essential supplies across the demonstration network.</p>
+        </div>
+        <div class="resource-hero-icon">📦</div>
+    </section>
+
+    <section class="resource-stats">
+
+        <div class="resource-stat">
+            <span>Total inventory records</span>
+            <h2>{{ resources|length }}</h2>
+            <small>Registered supply entries</small>
+        </div>
+
+        <div class="resource-stat">
+            <span>Total available units</span>
+            <h2>{{ resources|sum(attribute='quantity') }}</h2>
+            <small>Combined inventory quantity</small>
+        </div>
+
+        <div class="resource-stat">
+            <span>Resource categories</span>
+            <h2>{{ resources|map(attribute='category')|unique|list|length }}</h2>
+            <small>Different supply categories</small>
+        </div>
+
+    </section>
+
+    <section>
+        <div class="resource-heading">
+            <h2>Register New Supplies</h2>
+            <p>Add essential resources to the demonstration inventory.</p>
+        </div>
+
+        <div class="resource-form-panel">
+
+            <form method="POST" class="resource-form">
+
+                <div class="resource-form-grid">
+
+                    <div class="resource-field">
+                        <label for="resourceName">Resource name</label>
+                        <input id="resourceName" type="text" name="name"
+                               placeholder="e.g. Drinking Water Packs"
+                               required>
+                    </div>
+
+                    <div class="resource-field">
+                        <label for="resourceCategory">Resource category</label>
+                        <select id="resourceCategory" name="category" required>
+                            <option value="">Select category</option>
+                            <option>Food</option>
+                            <option>Clean Water</option>
+                            <option>Medical Kits</option>
+                            <option>Shelter Supplies</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="resource-field">
+                        <label for="resourceQuantity">Quantity</label>
+                        <input id="resourceQuantity" type="number" name="quantity"
+                               min="0" placeholder="Enter quantity"
+                               required>
+                    </div>
+
+                    <div class="resource-field">
+                        <label for="resourceLocation">Storage location</label>
+                        <input id="resourceLocation" type="text" name="location"
+                               value="Multan" required>
+                    </div>
+
+                </div>
+
+                <div class="resource-submit">
+                    <button type="submit">＋ Add to Inventory</button>
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+
+    <section>
+
+        <div class="resource-heading">
+            <h2>Current Inventory</h2>
+            <p>{{ resources|length }} registered inventory records</p>
+        </div>
+
+        <div class="resource-filter-panel">
+
+            <input
+                type="text"
+                id="resourceSearch"
+                placeholder="Search by resource name or location..."
+                aria-label="Search resources">
+
+            <select id="categoryFilter" aria-label="Filter by category">
+                <option value="">All categories</option>
+                <option value="Food">Food</option>
+                <option value="Clean Water">Clean Water</option>
+                <option value="Medical Kits">Medical Kits</option>
+                <option value="Shelter Supplies">Shelter Supplies</option>
+                <option value="Other">Other</option>
+            </select>
+
+        </div>
+
+        <div class="resource-list" id="resourceList">
+
+            {% for item in resources %}
+
+            <article class="resource-card">
+
+                <div class="resource-card-top">
+                    <div>
+                        <h3>{{ item.name }}</h3>
+                        <p>📍 {{ item.location }}</p>
+                    </div>
+
+                    <span class="resource-category">
+                        {{ item.category }}
+                    </span>
+                </div>
+
+                <div class="resource-quantity">
+                    <strong>{{ item.quantity }}</strong>
+                    <small>Units recorded in demo inventory</small>
+                </div>
+
+                {% if item.quantity <= 10 %}
+                    <span class="stock-warning">⚠ LOW STOCK</span>
+                {% else %}
+                    <span class="stock-normal">✓ STOCK AVAILABLE</span>
+                {% endif %}
+
+            </article>
+
+            {% else %}
+
+            <div class="resource-empty">
+                <div style="font-size:35px;">📦</div>
+                <h3>No inventory records yet</h3>
+                <p>Register your first relief supply using the form above.</p>
+            </div>
+
+            {% endfor %}
+
+            <div class="resource-no-results" id="resourceNoResults">
+                No matching resources found. Try another search or category.
+            </div>
+
+        </div>
+
+    </section>
+
+    <p class="resource-note">
+        DEMONSTRATION ENVIRONMENT · Inventory figures are simulated records.
+    </p>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("resourceSearch");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const cards = document.querySelectorAll(".resource-card");
+    const noResults = document.getElementById("resourceNoResults");
+
+    function filterResources() {
+
+        const searchText = searchInput.value.toLowerCase().trim();
+        const selectedCategory = categoryFilter.value.toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+
+            const name = card.querySelector("h3").textContent.toLowerCase();
+            const location = card.querySelector(".resource-card-top p").textContent.toLowerCase();
+            const category = card.querySelector(".resource-category").textContent.trim().toLowerCase();
+
+            const matchesSearch =
+                name.includes(searchText) || location.includes(searchText);
+
+            const matchesCategory =
+                selectedCategory === "" || category === selectedCategory;
+
+            const visible = matchesSearch && matchesCategory;
+
+            card.style.display = visible ? "" : "none";
+
+            if (visible) visibleCount++;
+        });
+
+        noResults.style.display =
+            cards.length > 0 && visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterResources);
+    categoryFilter.addEventListener("change", filterResources);
+
+});
+</script>
+
+{% endblock %}

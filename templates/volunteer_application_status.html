@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Application | ReliefNet AI</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 18px;
+            background: #071522;
+            color: #eaf4f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 40px auto;
+        }
+
+        .card {
+            padding: 30px;
+            margin-bottom: 20px;
+            background: #102536;
+            border: 1px solid #244454;
+            border-radius: 17px;
+        }
+
+        h1, h2 { margin-top: 0; }
+
+        p {
+            color: #b6cbd5;
+            line-height: 1.6;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            border: 1px solid #456274;
+            border-radius: 9px;
+            background: #071a27;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 9px;
+            background: #21bd91;
+            color: #06231d;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 9px 15px;
+            border-radius: 20px;
+            background: #244454;
+            color: #62edbd;
+            font-weight: bold;
+        }
+
+        .message {
+            padding: 17px;
+            margin-top: 15px;
+            border-radius: 10px;
+            background: #071a27;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .error {
+            color: #ff9999;
+        }
+
+        .success {
+            color: #62edbd;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 15px;
+            color: #62edbd;
+            text-decoration: none;
+        }
+
+        .label {
+            color: #62edbd;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Track Your Application</h1>
+
+        <p>
+            Enter your private tracking code to check
+            your volunteer application status.
+        </p>
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="tracking_token"
+                placeholder="Enter your tracking code"
+                required
+                autocomplete="off"
+            >
+
+            <button type="submit">Check Application Status</button>
+
+        </form>
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <p class="{{ category }}">{{ message }}</p>
+        {% endfor %}
+
+        {% if searched and not application %}
+            <p class="error">
+                No application was found. Please check your tracking code.
+            </p>
+        {% endif %}
+
+    </div>
+
+
+    {% if application %}
+
+    <div class="card">
+
+        <h2>Application Details</h2>
+
+        <p><span class="label">Applicant:</span> {{ application.name }}</p>
+        <p><span class="label">Location:</span> {{ application.location }}</p>
+        <p><span class="label">Skills:</span> {{ application.skills }}</p>
+
+        <p><span class="label">Current Status:</span></p>
+
+        <div class="status">{{ application.status }}</div>
+
+        {% if application.status == "Pending" %}
+            <div class="message">
+                Your application is being reviewed. Please check again later.
+            </div>
+        {% elif application.status == "Approved" %}
+            <div class="message">
+                Congratulations! Your volunteer application has been approved.
+            </div>
+        {% elif application.status == "Rejected" %}
+            <div class="message">
+                <strong>Application Decision</strong>
+                <p>Your application was not approved.</p>
+
+                {% if application.rejection_reason %}
+                    <strong>Reason:</strong>
+                    <p>{{ application.rejection_reason }}</p>
+                {% endif %}
+            </div>
+        {% elif application.status == "More Information Required" %}
+            <div class="message">
+                <strong>Additional information requested</strong>
+                <p>
+                    The review team needs some more information from you.
+                    Please provide your response below.
+                </p>
+            </div>
+        {% endif %}
+
+        {% if application.applicant_message %}
+            <div class="message">
+                <strong>Message from ReliefNet AI:</strong>
+                <p>{{ application.applicant_message }}</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    {% if application.status == "More Information Required" %}
+
+    <div class="card">
+
+        <h2>Submit Additional Information</h2>
+
+        <p>
+            Please provide the additional details requested by
+            the ReliefNet AI review team.
+        </p>
+
+        <form method="POST">
+
+            <input
+                type="hidden"
+                name="tracking_token"
+                value="{{ application.tracking_token }}"
+            >
+
+            <textarea
+                name="additional_information"
+                placeholder="Write your additional information here..."
+                maxlength="500"
+                required
+            ></textarea>
+
+            <button type="submit">
+                Submit Additional Information
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+    {% endif %}
+
+    <a class="back" href="{{ url_for('volunteer_apply') }}">
+        ← Back to Volunteer Portal
+    </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+instance/reliefnet.db
+.env
+Untitled-1.cpp
